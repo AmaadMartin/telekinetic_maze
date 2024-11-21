@@ -3,6 +3,8 @@ import cv2
 import mediapipe as mp
 import numpy as np
 
+PINCH_THRESHOLD = 0.06
+MOVE_THRESHOLD = 0.045
 
 class HandInput:
     def __init__(self):
@@ -45,7 +47,7 @@ class HandInput:
                 - np.array([finger_tip.x, finger_tip.y])
             )
             # Threshold for detecting pinch (adjust as needed)
-            if distance < 0.05:
+            if distance < PINCH_THRESHOLD:
                 finger_name = self.get_finger_name(landmark_id)
                 pinch_detected[finger_name] = True
         return pinch_detected
@@ -73,9 +75,14 @@ class HandInput:
             for hand_landmarks, handedness in zip(
                 results.multi_hand_landmarks, results.multi_handedness
             ):
+                self.mp_drawing.draw_landmarks(
+                    image, hand_landmarks, self.mp_hands.HAND_CONNECTIONS
+                )
                 hand_label = handedness.classification[0].label  # 'Left' or 'Right'
                 pinch_detected = self.detect_pinches(hand_landmarks, hand_label)
                 actions[hand_label].update(pinch_detected)
+
+        # cv2.imshow("Hand Input", image)
 
         return actions
 
@@ -102,7 +109,7 @@ class HandInput:
                     if self.prev_positions[label] is not None:
                         delta = wrist_pos - self.prev_positions[label]
                         dx, dy = delta[0], delta[1]
-                        threshold = 0.05  # Adjust as needed
+                        threshold = MOVE_THRESHOLD  # Adjust as needed
                         if abs(dx) > abs(dy):
                             if dx > threshold:
                                 direction = (1, 0)  # Right
@@ -118,6 +125,7 @@ class HandInput:
                             else:
                                 direction = None
                         self.prev_positions[label] = wrist_pos
+                        print(direction)
                         return direction
                     else:
                         self.prev_positions[label] = wrist_pos

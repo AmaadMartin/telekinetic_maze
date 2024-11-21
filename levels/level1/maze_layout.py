@@ -1,21 +1,17 @@
-# levels/level7.py
+# levels/level1/maze_layout.py
+
 level_map = [
     "##########",
-    "#S  P#   #",
+    "#S   #   #",
     "# ## # # #",
     "#    # # #",
     "#### # # #",
     "#      # #",
-    "# #P#### #",
+    "# ###### #",
     "#        #",
     "########E#",
     "##########",
 ]
 
-portals = {
-    (1, 4): (6, 2),
-    (6, 2): (1, 4),
-}
-
-def load_level():
-    return level_map, portals
+def get_level_map():
+    return level_map

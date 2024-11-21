@@ -10,6 +10,7 @@ TILE_SIZE = 40
 COLOR_WALL = (0, 0, 0)        # Black
 COLOR_PATH = (255, 255, 255)  # White
 COLOR_PLAYER = (0, 0, 255)    # Blue
+COLOR_PLAYER_MOVING = (0, 128, 255)  # Light Blue
 COLOR_EXIT = (0, 255, 0)      # Green
 COLOR_START = (255, 255, 0)   # Yellow
 COLOR_GATE = (255, 0, 0)      # Red
@@ -29,7 +30,7 @@ def load_maze(level_map):
         maze.append(list(row))
     return maze
 
-def draw_maze(screen, maze, player_pos):
+def draw_maze(screen, maze, player_pos, player_color=COLOR_PLAYER):
     """
     Draws the maze, objects, and the player on the screen.
     """
@@ -61,7 +62,7 @@ def draw_maze(screen, maze, player_pos):
                 pygame.draw.rect(screen, COLOR_PATH, rect)
     # Draw the player
     player_rect = pygame.Rect(player_pos[0] * TILE_SIZE, player_pos[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-    pygame.draw.rect(screen, COLOR_PLAYER, player_rect)
+    pygame.draw.rect(screen, player_color, player_rect)
 
 def get_start_position(maze):
     """
@@ -134,7 +135,7 @@ def update_visibility(maze, player_pos, visibility_radius):
                 visible_tiles.append((x, y))
     return visible_tiles
 
-def draw_maze_with_visibility(screen, maze, player_pos, visibility_radius):
+def draw_maze_with_visibility(screen, maze, player_pos, visibility_radius, player_color=COLOR_PLAYER):
     """
     Draws the maze with limited visibility around the player.
     """
@@ -169,7 +170,7 @@ def draw_maze_with_visibility(screen, maze, player_pos, visibility_radius):
                     pygame.draw.rect(screen, COLOR_PATH, rect)
     # Draw the player
     player_rect = pygame.Rect(player_pos[0] * TILE_SIZE, player_pos[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-    pygame.draw.rect(screen, COLOR_PLAYER, player_rect)
+    pygame.draw.rect(screen, player_color, player_rect)
 
 def update_moving_walls(maze, moving_walls, time_elapsed):
     """
