@@ -85,6 +85,54 @@ class HandInput:
         # cv2.imshow("Hand Input", image)
 
         return actions
+    
+    def get_finger_direction(self, hand_label, finger_name):
+        """
+        Returns the direction of a finger based on hand movement.
+        """
+        ret, frame = self.cap.read()
+        if not ret:
+            return None
+        frame = cv2.flip(frame, 1)
+        image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        results = self.hands.process(image)
+
+        if results.multi_hand_landmarks and results.multi_handedness:
+            for hand_landmarks, handedness in zip(
+                results.multi_hand_landmarks, results.multi_handedness
+            ):
+                label = handedness.classification[0].label
+                if label == hand_label:
+                    finger_id = None
+                    for idx, landmark in enumerate(hand_landmarks.landmark):
+                        if self.get_finger_name(idx) == finger_name:
+                            finger_id = idx
+                            break
+                    if finger_id is not None:
+                        finger_pos = np.array([landmark.x, landmark.y])
+                        if self.prev_positions[hand_label] is not None:
+                            delta = finger_pos - self.prev_positions[hand_label]
+                            dx, dy = delta[0], delta[1]
+                            threshold = MOVE_THRESHOLD
+                            if abs(dx) > abs(dy):
+                                if dx > threshold:
+                                    direction = (1, 0)
+                                elif dx < -threshold:
+                                    direction = (-1, 0)
+                                else:
+                                    direction = None
+                            else:
+                                if dy > threshold:
+                                    direction = (0, 1)
+                                elif dy < -threshold:
+                                    direction = (0, -1)
+                                else:
+                                    direction = None
+                            self.prev_positions[hand_label] = finger_pos
+                            return direction
+                        else:
+                            self.prev_positions[hand_label] = finger_pos
+        return None
 
     def get_movement_direction(self, hand_label):
         """
