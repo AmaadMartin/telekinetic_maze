@@ -1,4 +1,4 @@
-mediapipe
+pygame
 numpy
 opencv-python
-pygame
+mediapipe
