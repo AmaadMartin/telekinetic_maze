@@ -4,7 +4,7 @@ import sys
 import importlib
 
 def main():
-    levels = ['intro_level', 'level1', 'level2', 'level3', 'level4', 'level5', 'level6', 'level7', 'level8', 'level9', 'level10']
+    levels = ['end_level', 'intro_level', 'level1', 'level2', 'level3', 'level4', 'level5', 'level6', 'level7', 'level8', 'level9', 'level10']
     current_level_index = 0
 
     while current_level_index < len(levels):
