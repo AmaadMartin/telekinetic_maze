@@ -1,10 +1,10 @@
-# levels/level1/level_logic.py
+# levels/level4/level_logic.py
 
 import pygame
 import os
 import sys
 from utils.game_utils import *
-from .maze_layout import get_level_map
+from .maze_layout import get_level_map, get_portals
 from .controls import get_actions, index_pinched
 from utils.HandInput import HandInput
 
@@ -15,16 +15,17 @@ def run_level():
     pygame.init()
     clock = pygame.time.Clock()
 
-    # Load maze layout
+    # Load maze layout and portals
     level_map = get_level_map()
     maze = load_maze(level_map)
+    portals = get_portals()
 
     # Initialize screen
     maze_height = len(maze)
     maze_width = len(maze[0])
     screen_size = (maze_width * TILE_SIZE, maze_height * TILE_SIZE)
     screen = pygame.display.set_mode(screen_size)
-    pygame.display.set_caption("Maze Game - Level 1")
+    pygame.display.set_caption("Maze Game - Level 4")
 
     # Load images
     images = load_images()
@@ -69,13 +70,13 @@ def run_level():
                 pygame.quit()
                 sys.exit()
 
-        # make player move if index finger is pinched
+        # Update player image based on whether the index finger is pinched
         if index_pinched(hand_input):
             player_image = player_image_moving
         else:
             player_image = player_image_standing
             hand_input.prev_positions['Right'] = None
-        
+
         # Get actions from controls
         actions = get_actions(hand_input)
         # Process actions and update game state
@@ -86,10 +87,17 @@ def run_level():
             if is_move_valid(maze, new_pos):
                 player_pos = list(new_pos)
 
+                # Check if player is on a portal
+                current_pos = (player_pos[1], player_pos[0])  # (row, column)
+                if current_pos in portals:
+                    dest = portals[current_pos]
+                    player_pos = [dest[1], dest[0]]  # [column, row]
+                    print("Teleported via portal!")
+
         # Check for exit
         if is_exit(maze, player_pos):
             level_complete = True
-            print("Level 1 Complete!")
+            print("Level 4 Complete!")
             break
 
         # Draw maze and player
@@ -112,6 +120,7 @@ def load_images():
         ' ': 'path.png',
         'S': 'start.png',
         'E': 'exit.png',
+        'P': 'portal.png',
         # Add more tile-image mappings as needed
     }
     
