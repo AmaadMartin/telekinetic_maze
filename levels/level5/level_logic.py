@@ -1,31 +1,32 @@
-# levels/level4/level_logic.py
+# levels/level_with_blurred_vision/level_logic.py
 
 import pygame
 import os
 import sys
+import math
 from utils.game_utils import *
-from .maze_layout import get_level_map, get_portals
+from .maze_layout import get_level_map
 from .controls import get_actions, index_pinched
 from utils.HandInput import HandInput
 
 TILE_SIZE = 40  # Ensure this matches the TILE_SIZE in utils.game_utils
+VISION_RADIUS = 3  # Define the vision radius in tiles
 
 def run_level():
     # Initialize Pygame and other resources
     pygame.init()
     clock = pygame.time.Clock()
 
-    # Load maze layout and portals
+    # Load maze layout
     level_map = get_level_map()
     maze = load_maze(level_map)
-    portals = get_portals()
 
     # Initialize screen
     maze_height = len(maze)
     maze_width = len(maze[0])
     screen_size = (maze_width * TILE_SIZE, maze_height * TILE_SIZE)
     screen = pygame.display.set_mode(screen_size)
-    pygame.display.set_caption("Maze Game - Level 4")
+    pygame.display.set_caption("Maze Game - Blurred Vision Level")
 
     # Load images
     images = load_images()
@@ -87,22 +88,15 @@ def run_level():
             if is_move_valid(maze, new_pos):
                 player_pos = list(new_pos)
 
-                # Check if player is on a portal
-                current_pos = (player_pos[1], player_pos[0])  # (row, column)
-                if current_pos in portals:
-                    dest = portals[current_pos]
-                    player_pos = [dest[1], dest[0]]  # [column, row]
-                    print("Teleported via portal!")
-
         # Check for exit
         if is_exit(maze, player_pos):
             level_complete = True
-            print("Level 4 Complete!")
+            print("Level Complete!")
             break
 
-        # Draw maze and player
+        # Draw maze and player with vision mechanic
         screen.fill((0, 0, 0))
-        draw_maze(screen, maze, player_pos, images, player_image)
+        draw_maze_with_blurred_vision(screen, maze, player_pos, images, player_image, VISION_RADIUS)
         pygame.display.flip()
         clock.tick(30)  # Limit to 30 FPS
 
@@ -113,17 +107,16 @@ def run_level():
 def load_images():
     images = {}
     graphics_path = os.path.join(os.path.dirname(__file__), 'graphics')
-    
+
     # Tile symbols and corresponding image filenames
     tile_images = {
         '#': 'wall.png',
         ' ': 'path.png',
         'S': 'start.png',
         'E': 'exit.png',
-        'P': 'portal.png',
         # Add more tile-image mappings as needed
     }
-    
+
     for tile_symbol, filename in tile_images.items():
         image_path = os.path.join(graphics_path, filename)
         if os.path.exists(image_path):
@@ -132,18 +125,47 @@ def load_images():
             images[tile_symbol] = image
         else:
             print(f"Warning: Image file {filename} not found for tile '{tile_symbol}'")
-    
+
+    # Load vision mask image
+    vision_mask_path = os.path.join(graphics_path, 'vision_mask.png')
+    if os.path.exists(vision_mask_path):
+        vision_mask = pygame.image.load(vision_mask_path).convert_alpha()
+        vision_mask = pygame.transform.scale(vision_mask, (VISION_RADIUS * 2 * TILE_SIZE, VISION_RADIUS * 2 * TILE_SIZE))
+        images['vision_mask'] = vision_mask
+    else:
+        print("Warning: Image file 'vision_mask.png' not found for vision mask.")
+
     return images
 
-def draw_maze(screen, maze, player_pos, images, player_image):
+def draw_maze_with_blurred_vision(screen, maze, player_pos, images, player_image, vision_radius):
+    # Draw the visible tiles
     for y, row in enumerate(maze):
         for x, tile in enumerate(row):
-            rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-            if tile in images:
-                screen.blit(images[tile], rect)
-            else:
-                # Default to path if image not found for the tile
-                screen.blit(images[' '], rect)
+            dx = x - player_pos[0]
+            dy = y - player_pos[1]
+            distance = math.hypot(dx, dy)
+            if distance <= vision_radius + 1:
+                rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+                if tile in images:
+                    screen.blit(images[tile], rect)
+                else:
+                    # Default to path if image not found for the tile
+                    screen.blit(images[' '], rect)
+
     # Draw the player
     player_rect = pygame.Rect(player_pos[0] * TILE_SIZE, player_pos[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE)
     screen.blit(player_image, player_rect)
+
+    # Apply the vision mask
+    if 'vision_mask' in images:
+        mask_rect = images['vision_mask'].get_rect()
+        mask_rect.center = (player_pos[0] * TILE_SIZE + TILE_SIZE // 2, player_pos[1] * TILE_SIZE + TILE_SIZE // 2)
+        screen.blit(images['vision_mask'], mask_rect, special_flags=pygame.BLEND_RGBA_MULT)
+    else:
+        # If no vision mask image is available, draw a simple black overlay with a circular cutout
+        overlay = pygame.Surface(screen.get_size(), flags=pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 255))  # Semi-transparent black
+
+        # Create a circular cutout
+        pygame.draw.circle(overlay, (0, 0, 0, 0), (player_pos[0] * TILE_SIZE + TILE_SIZE // 2, player_pos[1] * TILE_SIZE + TILE_SIZE // 2), vision_radius * TILE_SIZE)
+        screen.blit(overlay, (0, 0))
