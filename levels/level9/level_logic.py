@@ -10,7 +10,7 @@ from .controls import get_actions, index_pinched
 from utils.HandInput import HandInput
 
 TILE_SIZE = 40  # Ensure this matches the TILE_SIZE in utils.game_utils
-VISION_RADIUS = 3  # Define the vision radius in tiles
+VISION_RADIUS = 2  # Define the vision radius in tiles
 
 def run_level():
     # Initialize Pygame and other resources
