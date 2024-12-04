@@ -1,7 +1,7 @@
 import pygame
 import sys
 
-def run_level():
+def run_level(music_start_time = 0):
     # Initialize Pygame
     pygame.init()
 
@@ -9,7 +9,7 @@ def run_level():
     screen_width = 800
     screen_height = 600
     screen = pygame.display.set_mode((screen_width, screen_height))
-    pygame.display.set_caption("Star Maze: The Portal's Enigma")
+    pygame.display.set_caption("The Portal's Enigma")
 
     # Colors
     BLACK = (0, 0, 0)
@@ -18,7 +18,7 @@ def run_level():
     # Font and text
     font = pygame.font.Font(None, 36)  # Regular text font
     title_font = pygame.font.Font(None, 48)  # Title font
-    title_text = "Star Maze: The Portal's Enigma"
+    title_text = "The Portal's Enigma"
     text_lines = [
         "As you delve deeper into the maze,",
         "the path ahead becomes more perplexing.",
@@ -99,6 +99,7 @@ def run_level():
         clock.tick(60)
 
     # Stop music and cleanup
+    music_end_time = pygame.mixer.music.get_pos() / 1000
     pygame.mixer.music.stop()
     pygame.quit()
-    return True
+    return True, music_end_time

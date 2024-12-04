@@ -1,7 +1,7 @@
 import pygame
 import sys
 
-def run_level():
+def run_level(music_start_time = 0):
     # Initialize Pygame
     pygame.init()
 
@@ -23,7 +23,7 @@ def run_level():
         "A long time ago, in a land of magic and mystery...",
         "",
         "There was a wise and powerful wizard,",
-        "the guardian of a golden star that brought light to his nation.",
+        "the guardian of a golden star that brought light to their nation.",
         "",
         "One fateful night, the golden star vanished into the darkness,",
         "spiraling through the void into an endless maze.",
@@ -100,4 +100,4 @@ def run_level():
     # Stop music and cleanup
     pygame.mixer.music.stop()
     pygame.quit()
-    return True
+    return True, 0

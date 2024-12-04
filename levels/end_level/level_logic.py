@@ -2,7 +2,7 @@ import pygame
 import sys
 import math
 
-def run_level():
+def run_level(music_start_time = 0):
     # Initialize Pygame
     pygame.init()
 
@@ -121,4 +121,4 @@ def run_level():
     # Stop music and cleanup
     pygame.mixer.music.stop()
     pygame.quit()
-    return True
+    return True, 0

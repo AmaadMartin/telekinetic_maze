@@ -10,10 +10,16 @@ from utils.HandInput import HandInput
 
 TILE_SIZE = 40  # Ensure this matches the TILE_SIZE in utils.game_utils
 
-def run_level():
+def run_level(music_start_time = 0):
     # Initialize Pygame and other resources
     pygame.init()
     clock = pygame.time.Clock()
+
+    # Load background music
+    music_path = os.path.join("levels/level3/music.mp3")
+    pygame.mixer.init()
+    pygame.mixer.music.load(music_path)
+    pygame.mixer.music.play(-1, music_start_time)
 
     # Load maze layout and portals
     level_map = get_level_map()
@@ -107,8 +113,9 @@ def run_level():
         clock.tick(30)  # Limit to 30 FPS
 
     hand_input.release()
+    music_end_time = pygame.mixer.music.get_pos() / 1000
     pygame.quit()
-    return True  # Indicate level completion
+    return True, music_end_time
 
 def load_images():
     images = {}

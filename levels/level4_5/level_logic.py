@@ -1,7 +1,7 @@
 import pygame
 import sys
 
-def run_level():
+def run_level(music_start_time = 0):
     # Initialize Pygame
     pygame.init()
 
@@ -9,7 +9,7 @@ def run_level():
     screen_width = 800
     screen_height = 600
     screen = pygame.display.set_mode((screen_width, screen_height))
-    pygame.display.set_caption("Star Maze: The Shadows Deepen")
+    pygame.display.set_caption("The Labyrinth's Gauntlet")
 
     # Colors
     BLACK = (0, 0, 0)
@@ -18,29 +18,30 @@ def run_level():
     # Font and text
     font = pygame.font.Font(None, 36)  # Regular text font
     title_font = pygame.font.Font(None, 48)  # Title font
-    title_text = "Star Maze: The Shadows Deepen"
+    title_text = "The Labyrinth's Gauntlet"
     text_lines = [
-        "Emerging from the maze's twisted portals,",
-        "you sense a change in the air.",
+        "Triumphing over the maze's perplexing portals,",
+        "you feel a rumble beneath your feet.",
         "",
-        "A dense fog begins to envelop the corridors,",
-        "and the light of the golden star dims ever so slightly.",
+        "The walls around you begin to shift and grind,",
+        "as if the maze itself has come alive.",
         "",
-        "The shadows grow bolder,",
-        "cloaking your path in an unsettling darkness.",
+        "Menacing spike-covered balls emerge,",
+        "moving relentlessly through the corridors.",
         "",
-        "Your vision narrows,",
-        "and only the immediate surroundings remain visible.",
+        "These deadly obstacles patrol the paths,",
+        "ready to send you back to the start at the slightest touch.",
         "",
-        "Trust in your instincts and memory,",
-        "for the maze now hides its secrets more closely.",
+        "Timing and precision are now your greatest allies.",
         "",
-        "Navigate carefully through the obscured passages.",
+        "Observe the patterns,",
+        "anticipate the movements,",
+        "and navigate carefully to avoid the perilous spike balls.",
         "",
-        "The darkness tests your resolve,",
-        "but the flicker of hope remains.",
+        "The maze tests not just your wisdom,",
+        "but your reflexes and courage.",
         "",
-        "Press on, for the fate of your world depends on you.",
+        "Prepare yourself for the gauntlet ahead.",
         "",
         "The journey continues..."
     ]
@@ -101,6 +102,7 @@ def run_level():
         clock.tick(60)
 
     # Stop music and cleanup
+    music_end_time = pygame.mixer.music.get_pos() / 1000
     pygame.mixer.music.stop()
     pygame.quit()
-    return True
+    return True, music_end_time
