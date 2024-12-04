@@ -4,7 +4,7 @@ import sys
 import importlib
 
 def main():
-    levels = ['intro_level', 'level1', 'level2', 'level2_3', 'level3', 'level4', 'level4_5', 'level5', 'level6', 'level7', 'level8', 'level9', 'level10', 'end_level']
+    levels = ['intro_level', 'level1', 'level2', 'level2_3', 'level3', 'level4', 'level4_5', 'level5', 'level6', 'level6_7', 'level7', 'level8', 'level8_9', 'level9', 'end_level']
     current_level_index = 0
     music_start_time = 0
 
